@@ -16,7 +16,6 @@
     "webpack"
   ],
   "author": "Web Cerebrium <webcerebrium@gmail.com> (http://webcerebrium.com/)",
-  "license": "MIT",
   "devDependencies": {
     "babel-core": "*",
     "babel-eslint": "*",
