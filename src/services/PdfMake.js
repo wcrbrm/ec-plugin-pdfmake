@@ -1,6 +1,15 @@
-import { setValue } from 'ec-react15-lib';
+import { setValue, Logger } from 'ec-react15-lib';
 
-class PdfGenerator {
+pdfMake.fonts = {
+  SourceSansPro: {
+    normal: 'SourceSansPro-Regular.ttf',
+    bold: 'SourceSansPro-Bold.ttf',
+    italics: 'SourceSansPro-Italic.ttf',
+    bolditalics: 'SourceSansPro-BoldItalic.ttf'
+  }
+};
+
+class PdfMake {
   doc = {
     pageSize: 'A4',
     content: [],
@@ -8,30 +17,23 @@ class PdfGenerator {
       font: 'SourceSansPro'
     }
   };
-  margin = { left: 5, top: 5, right: 5, bottom: 5 };
-
+  margin = {
+    left: 5,
+    top: 5,
+    right: 5,
+    bottom: 5
+  };
   addElement = (element) => {
     this.doc.content.push(element);
   };
-
   finish = (pdfTarget, context) => {
     const doc = JSON.parse(JSON.stringify(this.doc));
-    pdfMake.fonts = {
-      SourceSansPro: {
-        normal: 'SourceSansProLight.ttf',
-        bold: 'SourceSansProBold.ttf',
-        italics: 'SourceSansProLight.ttf'
-      }
-    };
-
+    Logger.of('pdfmake.finish').info('doc=', doc);
     if (pdfTarget) {
-      if (pdfTarget === '_blank') {
-        pdfMake.createPdf(doc).open();
-      }
       const file = pdfTarget || 'print-version';
       if (file.indexOf('.pdf') === -1) {
         pdfMake.createPdf(doc).getBase64((res) => {
-          setValue(`g:${pdfTarget}`, 'data:application/pdf;base64,' + res, context);
+          setValue(`g:${pdfTarget}`, `data:application/pdf;base64,${res}`, context);
         });
       } else {
         pdfMake.createPdf(doc).download(pdfTarget);
@@ -43,4 +45,4 @@ class PdfGenerator {
   };
 }
 
-export default PdfGenerator;
+export default PdfMake;

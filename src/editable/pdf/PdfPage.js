@@ -2,22 +2,14 @@ import React from 'react';
 import { Logger, getValue } from 'ec-react15-lib';
 import { renderPdfContainer } from './../../services/TplPdfLoader';
 
-// const addPage = ({ gen, props }) => {
-//   gen.addPage('A4');
-//   gen.setMargins({
-//     top: props.marginTop,
-//     bottom: props.marginBottom,
-//     left: props.marginLeft,
-//     right: props.marginRight
-//   });
-// };
-
 const PdfPage = ({ gen, props, context }) => {
   if (!gen) {
-    Logger.of('pdfmake.PdfPage').warn('Missing gen object'); return false;
+    Logger.of('pdfmake.PdfPage').warn('Missing gen object');
+    return false;
   }
 
   const elementData = getValue(props, 'elementData', context);
+  Logger.of('pdfmake.PdfPage').info('props.container=', props.container);
   const element = {
     pageBreak: 'after'
   };
