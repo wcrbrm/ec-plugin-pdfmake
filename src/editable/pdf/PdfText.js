@@ -8,7 +8,7 @@ const PdfText = ({ gen, props, context }) => {
   const value = getValue(props, 'value', context);
   const element = {};
   Logger.of('pdfmake.PdfText').info('gen=', gen);
-  element.text = value;
+  element.text = value || '';
   if (context.pageBreak) element.pageBreak = context.pageBreak;
   if (props.fontSize) element.fontSize = props.fontSize;
   if (props.fontStyle) element[props.fontStyle] = true;

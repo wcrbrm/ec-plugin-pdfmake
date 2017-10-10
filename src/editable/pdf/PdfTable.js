@@ -3,7 +3,7 @@ import { Logger, getValue } from 'ec-react15-lib';
 const PdfTableRow = (props, context) => {
   const value = getValue(props, 'value', context);
   const element = {};
-  element.text = value;
+  element.text = value || '';
   if (context.pageBreak) element.pageBreak = context.pageBreak;
   if (props.fontSize) element.fontSize = props.fontSize;
   if (props.fontStyle) element[props.fontStyle] = true;
