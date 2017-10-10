@@ -3,4 +3,4 @@ import PdfImage from './PdfImage';
 import PdfPage from './PdfPage';
 import PdfText from './PdfText';
 
-export { PdfHr, PdfImage, PdfPage, PdfText };
+export default { PdfHr, PdfImage, PdfPage, PdfText };

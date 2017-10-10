@@ -1,5 +1,5 @@
 import React from 'react';
-import { getValue } from 'ec-react15-lib';
+import { Logger, getValue } from 'ec-react15-lib';
 import { renderPdfContainer } from './../../services/TplPdfLoader';
 
 // const addPage = ({ gen, props }) => {
@@ -13,6 +13,10 @@ import { renderPdfContainer } from './../../services/TplPdfLoader';
 // };
 
 const PdfPage = ({ gen, props, context }) => {
+  if (!gen) {
+    Logger.of('pdfmake.PdfPage').warn('Missing gen object'); return false;
+  }
+
   const elementData = getValue(props, 'elementData', context);
   const element = {
     pageBreak: 'after'

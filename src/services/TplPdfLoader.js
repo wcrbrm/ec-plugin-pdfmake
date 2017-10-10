@@ -13,7 +13,8 @@ export const getPdfElementsList = (context) => {
   const ecOptions = context.globals.ecOptions;
   const elementsList = { ...commonPdfIndex.default };
   const plugin = ecOptions.plugins.find(p => (p.pluginName === 'pdfmake'));
-  Logger.of('TplPdfLoader.getPdfElementsList').warn('plugin=', plugin);
+  Logger.of('TplPdfLoader.getPdfElementsList').warn('plugin=', plugin, 
+    'elementsList=', elementsList, 'commonPdfIndex=', commonPdfIndex);
   if (plugin) {
     const pdf = plugin.pdfmake;
     Object.keys(pdf).forEach((k) => { elementsList[k] = pdf[k]; });
@@ -45,6 +46,7 @@ export const renderPdfContainer = (gen, container, context) => {
 export const generatePdf = (tpl, context, callback) => {
   // lets imagine all images are already loaded
   const gen = new PdfGenerator();
+  Logger.of('TplPdfLoader.generatePdf').warn('started', 'gen=', gen);
   collectPdfImages(tpl, context, () => {
     renderPdfContainer(gen, tpl, context);
     if (typeof callback === 'function') callback(gen, context);

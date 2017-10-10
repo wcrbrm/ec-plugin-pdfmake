@@ -1,4 +1,9 @@
+import { Logger } from 'ec-react15-lib';
+
 const PdfHr = ({ gen, props, context }) => {
+  if (!gen) {
+    Logger.of('pdfmake.PdfHr').warn('Missing gen object'); return false;
+  }
   const element = {
     canvas: [
       {

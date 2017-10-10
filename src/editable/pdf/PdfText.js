@@ -1,6 +1,9 @@
-import { getValue } from 'ec-react15-lib';
+import { Logger, getValue } from 'ec-react15-lib';
 
 const PdfText = ({ gen, props, context }) => {
+  if (!gen) {
+    Logger.of('pdfmake.PdfText').warn('Missing gen object'); return false;
+  }
   const value = getValue(props, 'value', context);
   const element = {};
 

@@ -2,7 +2,7 @@ import { getDocumentContext, Logger } from 'ec-react15-lib';
 import { generatePdf } from './TplPdfLoader';
 
 export const onDataReady = ({ route, tpl, store }) => {
-  if (route.pdf === 'pdfmake') {
+  if (route.pdf === 'pdfmake' || tpl.pdf === 'pdfmake') {
     Logger.of('pdfmake.EventHandler.onDataReady').warn('store=', store, 'tpl=', tpl, 'route=', route);
     const { dispatch } = store;
     setTimeout(() => { // giving digest a try
