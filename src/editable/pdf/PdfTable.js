@@ -1,18 +1,5 @@
 import { Logger, getValue } from 'ec-react15-lib';
-
-const PdfTableRow = (props, context) => {
-  const value = getValue(props, 'value', context);
-  const element = {};
-  element.text = value || '';
-  if (context.pageBreak) element.pageBreak = context.pageBreak;
-  if (props.fontSize) element.fontSize = props.fontSize;
-  if (props.fontStyle) element[props.fontStyle] = true;
-  if (props.textAlign) element.alignment = props.textAlign;
-  if (props.color) element.color = props.color;
-  if (props.margin) element.margin = props.margin;
-  return element;
-};
-
+import { preprocessText } from './PdfText';
 
 const PdfTable = ({ gen, props, context }) => {
   if (!gen) {
@@ -26,22 +13,26 @@ const PdfTable = ({ gen, props, context }) => {
     marginLeft = 0
   } = props;
   const margin = [];
-  margin.push(marginLeft, marginTop, marginRight, marginBottom);
+  margin.push(marginTop, marginRight, marginBottom, marginLeft);
+
   const element = {};
   element.table = { body: [] };
   if (context.pageBreak) element.pageBreak = context.pageBreak;
   if (props.layout) element.layout = props.layout;
   if (props.headerRows) element.table = { headerRows: props.headerRows };
+  if (props.widths) element.table = { widths: props.widths };
   if (margin.length) element.margin = margin;
   if (props.body) {
     const body = [];
-    props.body.forEach((rowTable, i) => {
-      const row = [];
-      rowTable.forEach((el) => {
-        const newEl = PdfTableRow(el, context);
-        row.push(newEl);
+    props.body.forEach((row, i) => {
+      const rowContent = [];
+      row.forEach((col) => {
+        if (col.type === 'PdfText') {
+          const newCol = preprocessText(col, context);
+          rowContent.push(newCol);
+        }
       });
-      body[i] = row;
+      body[i] = rowContent;
     });
     element.table.body = body;
   }

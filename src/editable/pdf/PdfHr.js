@@ -22,7 +22,8 @@ const PdfHr = ({ gen, props, context }) => {
         x2: 500 - (margin[3] || 0),
         y2: margin[0] || 0,
         lineWidth: props.lineHeight || 0.5,
-        lineColor: props.lineColor || 'black'
+        lineColor: props.lineColor || 'black',
+        dash: { length: props.dash || 0 }
       }
     ]
   };
