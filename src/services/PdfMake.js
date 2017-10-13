@@ -1,4 +1,5 @@
 import { setValue, Logger } from 'ec-react15-lib';
+import { getElementStyling } from './PdfStyles';
 
 pdfMake.fonts = {
   SourceSansPro: {
@@ -17,11 +18,8 @@ class PdfMake {
       font: 'SourceSansPro'
     }
   };
-  margin = {
-    left: 5,
-    top: 5,
-    right: 5,
-    bottom: 5
+  setDocDefinition = (definition) => {
+    this.doc = { ...this.doc, ...definition };
   };
   addElement = (element) => {
     this.doc.content.push(element);
@@ -43,6 +41,7 @@ class PdfMake {
     }
     return true;
   };
+  getStyling = getElementStyling;
 }
 
 export default PdfMake;

@@ -24,12 +24,15 @@ export const getPdfElementsList = (context) => {
 
 export const renderPdfContainer = (gen, container, context) => {
   const elementsList = getPdfElementsList(context);
+  const { pageSize: { width = false }, pageMargins = [0, 0, 0, 0] } = gen.doc;
+  const widthContainer = (width) ? width - pageMargins[0] - pageMargins[2] : false;
   container.forEach((props) => {
     // basically we are outlining container - where the component will be rendered
-    const ctx = { ...context };
+    const ctx = widthContainer ? { ...context, width: widthContainer } : { ...context };
     if (typeof elementsList[props.type] === 'function') {
       Logger.of('TplPdfLoader.renderPdfContainer').warn('props=', props, 'ctx=', ctx, 'gen=', gen);
       // there is no merged context, as chilren typically are PdfPage's
+
       ReactDOMServer.renderToString(React.createElement(elementsList[props.type], { gen, props, context: ctx }));
     } else {
       Logger.of('TplPdfLoader.renderPdfContainer').error('Cannot render PDF element of type', props.type);
