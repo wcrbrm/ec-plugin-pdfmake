@@ -1,12 +1,15 @@
-import { matchConditions, getValue } from 'ec-react15-lib';
+import { matchConditions, getFromCondition, getValue } from 'ec-react15-lib';
+
+const getValueHelper = (field, props, context) =>
+  (getValue(props, field, context) || getFromCondition(field, props, context) || false);
 
 export const getPageStyling = (props, context) => {
-  const marginLeft = getValue(props, 'marginLeft', context) || 0;
-  const marginRight = getValue(props, 'marginRight', context) || 0;
-  const marginBottom = getValue(props, 'marginBottom', context) || 0;
-  const marginTop = getValue(props, 'marginTop', context) || 0;
-  const width = getValue(props, 'width', context) || 0;
-  const height = getValue(props, 'height', context) || 0;
+  const marginLeft = getValueHelper('marginLeft', props, context) || 0;
+  const marginRight = getValueHelper('marginRight', props, context) || 0;
+  const marginBottom = getValueHelper('marginBottom', props, context) || 0;
+  const marginTop = getValueHelper('marginTop', props, context) || 0;
+  const width = getValueHelper('width', props, context) || 0;
+  const height = getValueHelper('height', props, context) || 0;
 
   if (props.display && props.display.conditions) {
     if (!matchConditions(props, props.display.conditions, context)) return false;
@@ -24,36 +27,35 @@ export const getPageStyling = (props, context) => {
       stylesOverride[key] = stylesAllowed[key];
     }
   });
-
   return stylesOverride;
 };
 
 export const getElementStyling = (props, context) => {
   if (props.display && props.display.conditions) {
-    if (!matchConditions(props, props.display.conditions, context)) {
-      return false;
-    }
+    if (!matchConditions(props, props.display.conditions, context)) return false;
   }
   const stylesOverride = {};
   const margin = [];
-  const {
-    marginTop = 0,
-    marginRight = 0,
-    marginBottom = 0,
-    marginLeft = 0
-  } = props;
+  const marginTop = getValueHelper('marginTop', props, context) || 0;
+  const marginRight = getValueHelper('marginRight', props, context) || 0;
+  const marginBottom = getValueHelper('marginBottom', props, context) || 0;
+  const marginLeft = getValueHelper('marginLeft', props, context) || 0;
   margin.push(marginLeft, marginTop, marginRight, marginBottom);
 
+  const fontStyle = getValueHelper('fontStyle', props, context);
+  const width = getValueHelper('width', props, context) || 0;
+  const height = getValueHelper('height', props, context) || 0;
+
   const stylesAllowed = {
-    color: props.color || null,
-    bold: (props.fontStyle && props.fontStyle === 'bold') ? true : null,
-    italics: (props.fontStyle && props.fontStyle === 'italic') ? true : null,
-    fontSize: props.fontSize || null,
-    font: props.fontFamily || null,
-    lineHeight: props.lineHeight || null,
-    alignment: props.textAlign || null,
+    color: getValueHelper('color', props, context) || null,
+    bold: (fontStyle && fontStyle === 'bold') ? true : null,
+    italics: (fontStyle && fontStyle === 'italic') ? true : null,
+    fontSize: getValueHelper('fontSize', props, context) || null,
+    font: getValueHelper('fontFamily', props, context) || null,
+    lineHeight: getValueHelper('lineHeight', props, context) || null,
+    alignment: getValueHelper('textAlign', props, context) || null,
     margin: (marginLeft || marginTop || marginRight || marginBottom) ? margin : null,
-    pageSize: (props.width && props.height) ? { width: props.width, height: props.height } : null,
+    pageSize: (width && height) ? { width, height } : null,
     layout: props.layout || null,
     table: (props.headerRows || props.widths)
       ? { headerRows: props.headerRows || 1, widths: props.widths || null } : null
