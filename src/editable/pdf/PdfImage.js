@@ -9,6 +9,7 @@ const PdfImage = ({ gen, props, context }) => {
   if (!styles) return false;
 
   const image = getValue(props, 'src', context);
+  if (!image) return false;
   const element = { image };
   if (context.width) element.width = context.width;
   if (context.height) element.height = context.height;
