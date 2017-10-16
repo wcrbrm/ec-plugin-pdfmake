@@ -1,12 +1,61 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { Logger } from 'ec-react15-lib';
+import { Logger, getValue, setValue } from 'ec-react15-lib';
 import * as commonPdfIndex from './../editable/pdf';
 import PdfMake from './PdfMake';
 
+const toDataURL = (logo, callback, outputFormat) => {
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  let src = '';
+  if (logo) {
+    src = logo;
+  }
+
+  img.onerror = () => Logger.of('TplPdfLoader.toDataURL').info('Image not loaded src=', src);
+  img.onload = function () {
+    Logger.of('TplPdfLoader.toDataURL').info('Image loaded src=', src);
+    const canvas = document.createElement('CANVAS');
+    const ctx = canvas.getContext('2d');
+    canvas.height = this.naturalHeight;
+    canvas.width = this.naturalWidth;
+    ctx.drawImage(this, 0, 0);
+    const dataURL = canvas.toDataURL(outputFormat);
+    callback(dataURL);
+  };
+  img.src = src;
+  if (img.complete || img.complete === undefined) {
+    img.src = src;
+  }
+};
+
 export const collectPdfImages = (tpl, context, callback) => {
-  // TODO: go through the tree of image
-  if (typeof callback === 'function') callback();
+  const imagesArray = tpl[0].container.filter(element => element.type === 'PdfImage');
+  const requests = imagesArray.map((element) => {
+    return new Promise((resolve) => {
+      const src = getValue(element, 'src', context);
+      const variable = element.src || element['@src'];
+      if (src && src.indexOf('http') !== -1) {
+        toDataURL(
+          src,
+          (dataUrl = '') => {
+            Logger.of('TplPdfLoader.toDataURL').info('Image dataUrl=', dataUrl);
+            setValue(variable, dataUrl, context);
+            resolve();
+          }
+        );
+      } else if (src && src.indexOf('data:image/') !== -1) {
+        Logger.of('TplPdfLoader.toDataURL').info('Image dataUrl=', src);
+        resolve();
+      } else {
+        Logger.of('TplPdfLoader.toDataURL').info('Image src=', src);
+        resolve();
+      }
+    });
+  });
+  Promise.all(requests).then(() => {
+    if (typeof callback === 'function') callback();
+  });
 };
 
 export const getPdfElementsList = (context) => {
