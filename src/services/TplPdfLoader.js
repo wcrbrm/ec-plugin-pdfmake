@@ -4,18 +4,13 @@ import { Logger, getValue, setValue } from 'ec-react15-lib';
 import * as commonPdfIndex from './../editable/pdf';
 import PdfMake from './PdfMake';
 
-const toDataURL = (logo, callback, outputFormat) => {
-  const img = new Image();
+const toDataURL = (src, callback, outputFormat) => {
+  const img = new Image();  // eslint-disable-line
   img.crossOrigin = 'Anonymous';
-  let src = '';
-  if (logo) {
-    src = logo;
-  }
-
   img.onerror = () => Logger.of('TplPdfLoader.toDataURL').info('Image not loaded src=', src);
   img.onload = function () {
     Logger.of('TplPdfLoader.toDataURL').info('Image loaded src=', src);
-    const canvas = document.createElement('CANVAS');
+    const canvas = document.createElement('CANVAS');  // eslint-disable-line
     const ctx = canvas.getContext('2d');
     canvas.height = this.naturalHeight;
     canvas.width = this.naturalWidth;
