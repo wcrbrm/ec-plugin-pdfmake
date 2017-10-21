@@ -8,7 +8,8 @@ const toDataURL = (src, callback, outputFormat) => {
   const img = new Image();  // eslint-disable-line
   img.crossOrigin = 'Anonymous';
   img.onerror = () => Logger.of('TplPdfLoader.toDataURL').info('Image not loaded src=', src);
-  img.onload = function () {
+  img.onload = function () { // eslint-disable-line
+    // to be warned: no arrow function. "this" is used below
     Logger.of('TplPdfLoader.toDataURL').info('Image loaded src=', src);
     const canvas = document.createElement('CANVAS');  // eslint-disable-line
     const ctx = canvas.getContext('2d');

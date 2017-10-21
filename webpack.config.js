@@ -25,6 +25,10 @@ module.exports = {
   module: {
     loaders: [
       {
+        test: /\.css$/,
+        loaders: ['css-loader']
+      },
+      {
         test: /\.js?$/,
         loaders: ['babel-loader', 'eslint-loader'],
         exclude: [ /node_modules/, /ec-react15-lib/ ]
