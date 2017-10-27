@@ -9,6 +9,10 @@ const PdfImage = ({ gen, props, context }) => {
   if (!styles) return false;
 
   const image = getValue(props, 'src', context);
+  if (image.indexOf('data:image/') !== 0) {
+    Logger.of('pdfmake.PdfImage').warn('Images should contain dataURL entries (or local file paths in node.js)');
+    return false;
+  }
   if (!image) return false;
   const element = { image };
   if (context.width) element.width = context.width;

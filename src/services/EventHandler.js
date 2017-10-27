@@ -3,7 +3,7 @@ import { generatePdf } from './TplPdfLoader';
 
 export const onDataReady = ({ route, tpl, store }) => {
   if (route.pdf === 'pdfmake' || tpl.pdf === 'pdfmake') {
-    Logger.of('pdfmake.EventHandler.onDataReady').warn('store=', store, 'tpl=', tpl, 'route=', route);
+    Logger.of('pdfmake.EventHandler.onDataReady').info('store=', store, 'tpl=', tpl, 'route=', route);
     const { dispatch } = store;
     setTimeout(() => { // giving digest a try
       const pdfTarget = tpl.pdfTarget || false;

@@ -4,60 +4,55 @@ import { Logger, getValue, setValue } from 'ec-react15-lib';
 import * as commonPdfIndex from './../editable/pdf';
 import PdfMake from './PdfMake';
 
-const toDataURL = (src, callback, outputFormat) => {
-  const img = new Image();  // eslint-disable-line
-  img.setAttribute('crossOrigin', 'anonymous');
-  img.src = src;
-  img.onerror = () => Logger.of('TplPdfLoader.toDataURL').info('Image not loaded src=', src);
-  img.onload = function () { // eslint-disable-line
-    // to be warned: no arrow function. "this" is used below
-    Logger.of('TplPdfLoader.toDataURL').info('Image loaded src=', src);
-    const canvas = document.createElement('CANVAS');  // eslint-disable-line
-    const ctx = canvas.getContext('2d');
-    canvas.height = this.naturalHeight;
-    canvas.width = this.naturalWidth;
-    ctx.drawImage(this, 0, 0);
-    const dataURL = canvas.toDataURL(outputFormat);
-    callback(dataURL);
-  };
-};
+const toDataURL = url => fetch(url) // eslint-disable-line
+  .then(response => response.blob())
+  .then(blob => new Promise((resolve, reject) => {
+    const reader = new FileReader();  // eslint-disable-line
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  }));
 
 export const collectPdfImages = (tpl, context, callback) => {
   const imagesArray = tpl[0].container.filter(element => element.type === 'PdfImage');
   const requests = imagesArray.map((element) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const src = getValue(element, 'src', context);
       const variable = element.src || element['@src'];
-      if (src && src.indexOf('data:image/') === -1) {
-        toDataURL(
-          src,
-          (dataUrl = '') => {
-            Logger.of('TplPdfLoader.toDataURL').info('Image dataUrl=', dataUrl);
+      if (src && src.indexOf('http') !== -1) {
+        toDataURL(src)
+          .then((dataUrl) => {
             setValue(variable, dataUrl, context);
             resolve();
-          }
-        );
+          })
+          .catch((error) => {
+            Logger.of('TplPdfLoader.toDataURL').warn('Error load=', error, 'src=', src);
+            reject();
+          });
       } else if (src && src.indexOf('data:image/') !== -1) {
-        Logger.of('TplPdfLoader.toDataURL').info('Image dataUrl=', src);
-        setValue(variable, src, context);
         resolve();
       } else {
-        Logger.of('TplPdfLoader.toDataURL').info('Image src=', src);
-        resolve();
+        reject();
       }
     });
   });
-  Promise.all(requests).then(() => {
-    if (typeof callback === 'function') callback();
-  });
+  Promise.all(requests)
+    .then(() => {
+      if (typeof callback === 'function') callback();
+    })
+    .catch(() => {
+      Logger.of('TplPdfLoader.toDataURL')
+        .warn('Images should contain dataURL entries (or local file paths in node.js)');
+      if (typeof callback === 'function') callback();
+    });
 };
 
 export const getPdfElementsList = (context) => {
   const { ecOptions } = context.globals;
   const elementsList = { ...commonPdfIndex.default };
   const plugin = ecOptions.plugins.find(p => (p.pluginName === 'pdfmake'));
-  Logger.of('TplPdfLoader.getPdfElementsList')
-    .warn('plugin=', plugin, 'elementsList=', elementsList, 'commonPdfIndex=', commonPdfIndex);
+  // Logger.of('TplPdfLoader.getPdfElementsList')
+  //   .warn('plugin=', plugin, 'elementsList=', elementsList, 'commonPdfIndex=', commonPdfIndex);
   if (plugin) {
     const pdf = plugin.pdfmake;
     Object.keys(pdf).forEach((k) => { elementsList[k] = pdf[k]; });
@@ -73,7 +68,7 @@ export const renderPdfContainer = (gen, container, context) => {
     // basically we are outlining container - where the component will be rendered
     const ctx = widthContainer ? { ...context, width: widthContainer } : { ...context };
     if (typeof elementsList[props.type] === 'function') {
-      Logger.of('TplPdfLoader.renderPdfContainer').warn('props=', props, 'ctx=', ctx, 'gen=', gen);
+      //Logger.of('TplPdfLoader.renderPdfContainer').warn('props=', props, 'ctx=', ctx, 'gen=', gen);
       // there is no merged context, as chilren typically are PdfPage's
 
       ReactDOMServer.renderToString(React.createElement(elementsList[props.type], { gen, props, context: ctx }));
@@ -86,7 +81,7 @@ export const renderPdfContainer = (gen, container, context) => {
 export const generatePdf = (tpl, context, callback) => {
   // lets imagine all images are already loaded
   const gen = new PdfMake();
-  Logger.of('TplPdfLoader.generatePdf').warn('started', 'gen=', gen);
+  Logger.of('TplPdfLoader.generatePdf').info('started', 'gen=', gen);
   collectPdfImages(tpl, context, () => {
     renderPdfContainer(gen, tpl, context);
     if (typeof callback === 'function') callback(gen, context);
