@@ -6,7 +6,8 @@ import PdfMake from './PdfMake';
 
 const toDataURL = (src, callback, outputFormat) => {
   const img = new Image();  // eslint-disable-line
-  img.crossOrigin = 'Anonymous';
+  img.setAttribute('crossOrigin', 'anonymous');
+  img.src = src;
   img.onerror = () => Logger.of('TplPdfLoader.toDataURL').info('Image not loaded src=', src);
   img.onload = function () { // eslint-disable-line
     // to be warned: no arrow function. "this" is used below
@@ -19,10 +20,6 @@ const toDataURL = (src, callback, outputFormat) => {
     const dataURL = canvas.toDataURL(outputFormat);
     callback(dataURL);
   };
-  img.src = src;
-  if (img.complete || img.complete === undefined) {
-    img.src = src;
-  }
 };
 
 export const collectPdfImages = (tpl, context, callback) => {
@@ -31,7 +28,7 @@ export const collectPdfImages = (tpl, context, callback) => {
     return new Promise((resolve) => {
       const src = getValue(element, 'src', context);
       const variable = element.src || element['@src'];
-      if (src && src.indexOf('http') !== -1) {
+      if (src && src.indexOf('data:image/') === -1) {
         toDataURL(
           src,
           (dataUrl = '') => {
@@ -42,6 +39,7 @@ export const collectPdfImages = (tpl, context, callback) => {
         );
       } else if (src && src.indexOf('data:image/') !== -1) {
         Logger.of('TplPdfLoader.toDataURL').info('Image dataUrl=', src);
+        setValue(variable, src, context);
         resolve();
       } else {
         Logger.of('TplPdfLoader.toDataURL').info('Image src=', src);

@@ -2,7 +2,6 @@ import { setValue, Logger } from 'ec-react15-lib';
 import { getElementStyling } from './PdfStyles';
 
 class PdfMake {
-
   // contructor can accept library - when running in server-side mode
   constructor(pdfPrinter) {
     Logger.of('pdfmake.constructor').info('initialized', typeof pdfPrinter);
