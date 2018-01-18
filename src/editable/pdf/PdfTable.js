@@ -9,7 +9,6 @@ const PdfTable = ({ gen, props, context }) => {
   }
   const styles = getElementStyling(props, context);
   if (!styles) return false;
-
   const element = {};
   element.table = { body: [] };
   if (context.pageBreak) element.pageBreak = context.pageBreak;
@@ -27,7 +26,8 @@ const PdfTable = ({ gen, props, context }) => {
       body[i] = rowContent;
     });
     element.table.body = body;
-
+    if (styles.widths) element.table.widths = styles.widths;
+    if (styles.headerRows) element.table.headerRows = styles.headerRows;
     gen.addElement({ ...element, ...styles });
   }
 

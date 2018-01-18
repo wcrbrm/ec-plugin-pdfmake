@@ -57,8 +57,8 @@ export const getElementStyling = (props, context) => {
     margin: (marginLeft || marginTop || marginRight || marginBottom) ? margin : null,
     pageSize: (width && height) ? { width, height } : null,
     layout: props.layout || null,
-    table: (props.headerRows || props.widths)
-      ? { headerRows: props.headerRows || 1, widths: props.widths || null } : null
+    widths: props.widths || null,
+    headerRows: props.headerRows || null
   };
 
   Object.keys(stylesAllowed).forEach((key) => {
@@ -66,7 +66,6 @@ export const getElementStyling = (props, context) => {
       stylesOverride[key] = stylesAllowed[key];
     }
   });
-
   return stylesOverride;
 };
 
