@@ -28,6 +28,11 @@ const PdfTable = ({ gen, props, context }) => {
     element.table.body = body;
     if (styles.widths) element.table.widths = styles.widths;
     if (styles.headerRows) element.table.headerRows = styles.headerRows;
+    
+    if (!styles.body)  {
+      Logger.of('pdfmake.PdfTable').warn('Missing styles.body from element', JSON.stringify(element));
+      return false;
+    }
     gen.addElement({ ...element, ...styles });
   }
 
