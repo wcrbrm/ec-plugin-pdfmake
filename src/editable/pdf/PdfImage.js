@@ -15,8 +15,11 @@ const PdfImage = ({ gen, props, context }) => {
   }
   if (!image) return false;
   const element = { image };
-  if (context.width) element.width = context.width;
-  if (context.height) element.height = context.height;
+  const scale = getValue(props, 'scale', context, true);
+  if (scale) {
+    if (context.width) element.width = context.width;
+    if (context.height) element.height = context.height;
+  }
   gen.addElement({ ...element, ...styles });
   return false;
 };

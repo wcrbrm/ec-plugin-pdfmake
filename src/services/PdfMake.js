@@ -8,15 +8,15 @@ class PdfMake {
     this.pdfPrinter = pdfPrinter;
     if (!this.pdfPrinter && typeof window !== 'undefined' && typeof window.pdfMake !== 'undefined') {
       this.pdfPrinter = window.pdfMake;
+      this.pdfPrinter.fonts = {
+        SourceSansPro: {
+          normal: 'SourceSansPro-Regular.ttf',
+          bold: 'SourceSansPro-Bold.ttf',
+          italics: 'SourceSansPro-Italic.ttf',
+          bolditalics: 'SourceSansPro-BoldItalic.ttf'
+        }
+      };
     }
-    this.pdfPrinter.fonts = {
-      SourceSansPro: {
-        normal: 'SourceSansPro-Regular.ttf',
-        bold: 'SourceSansPro-Bold.ttf',
-        italics: 'SourceSansPro-Italic.ttf',
-        bolditalics: 'SourceSansPro-BoldItalic.ttf'
-      }
-    };
   }
 
   doc = {
